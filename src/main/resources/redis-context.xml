@@ -1,0 +1,38 @@
+<beans     xmlns="http://www.springframework.org/schema/beans"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:p="http://www.springframework.org/schema/p"
+           xsi:schemaLocation="
+            http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
+
+    <bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <property name="maxIdle" value="${spring.redis.pool.maxIdle}"/>
+        <property name="minIdle" value="${spring.redis.pool.minIdle}"/>
+        <property name="maxActive" value="${spring.redis.pool.maxActive}" />
+        <property name="maxWait" value="${spring.redis.pool.maxWait}" />
+        <property name="testOnBorrow" value="${spring.redis.pool.testOnBorrow}" />
+    </bean>
+
+    <bean id="connectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
+          p:host-name="${spring.redis.host}"
+          p:port="${spring.redis.port}"
+          p:password="${spring.redis.password}"
+          p:pool-config-ref="poolConfig"/>
+
+    <bean id="redisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate">
+        <property name="connectionFactory"   ref="connectionFactory" />
+    </bean>
+
+
+    <!-- 配置redis连接池 -->
+    <bean id="jedisPool" class="redis.clients.jedis.JedisPool">
+        <constructor-arg name="poolConfig" ref="poolConfig"/>
+        <constructor-arg name="host" value="127.0.0.1"></constructor-arg>
+        <constructor-arg name="port" value="6379"></constructor-arg>
+        <constructor-arg name="timeout" value="100000"></constructor-arg>
+        <!--没有密码一定不能写密码-->
+       <!-- <constructor-arg name="password" value=""></constructor-arg>-->
+    </bean>
+
+
+</beans>
